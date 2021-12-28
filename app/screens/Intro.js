@@ -1,13 +1,18 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState } from 'react';
 import {View, StyleSheet, Text, TextInput, StatusBar, Dimensions} from 'react-native';
 import colors from '../misc/colors';
 import RoundIconBtn from '../components/RoundIconBtn';
 
 const Intro = () => {
-    const [user, setUser] = useState('');
+    const [name, setName] = useState('');
     const handleOnChangeText = (text) => {
-        setUser(text);
+        setName(text);
     };
+    const handleSubmit = async () =>{
+        const user = {name : name};
+        await AsyncStorage.setItem('user', JSON.stringify(user));
+    }
 
     return(
         <>
@@ -16,14 +21,14 @@ const Intro = () => {
             <View style={styles.conatiner}>
                 <Text style={styles.inputTitle}>Enter Your Name</Text>
                 <TextInput 
-                    value={user} 
+                    value={name} 
                     onChangeText={handleOnChangeText} 
                     placeholder = "Enter name" 
                     style = {styles.textInput}
                 />
                 
-                {user.trim().length >= 2 ? ( 
-                    <RoundIconBtn antIconName='arrowright'/>
+                {name.trim().length >= 2 ? ( 
+                    <RoundIconBtn antIconName='arrowright' onPress={handleSubmit}/>
                 ) : null}
             </View>
         </>
