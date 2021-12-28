@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import {View, StyleSheet, Text, TextInput, StatusBar, Dimensions} from 'react-native';
 import colors from '../misc/colors';
+import RoundIconBtn from '../components/RoundIconBtn';
 
 const Intro = () => {
-    const [user, setUser] = useState()
+    const [user, setUser] = useState('');
     const handleOnChangeText = (text) => {
         setUser(text);
     };
@@ -11,7 +12,7 @@ const Intro = () => {
     return(
         <>
             <StatusBar hidden/>
-
+            
             <View style={styles.conatiner}>
                 <Text style={styles.inputTitle}>Enter Your Name</Text>
                 <TextInput 
@@ -20,6 +21,10 @@ const Intro = () => {
                     placeholder = "Enter name" 
                     style = {styles.textInput}
                 />
+                
+                {user.trim().length >= 2 ? ( 
+                    <RoundIconBtn antIconName='arrowright'/>
+                ) : null}
             </View>
         </>
     );
@@ -41,6 +46,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         paddingLeft: 15,
         fontSize:15,
+        marginBottom: 15,
     },
     inputTitle: {
         alignSelf: 'flex-start',
