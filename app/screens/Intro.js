@@ -4,7 +4,7 @@ import {View, StyleSheet, Text, TextInput, StatusBar, Dimensions} from 'react-na
 import colors from '../misc/colors';
 import RoundIconBtn from '../components/RoundIconBtn';
 
-const Intro = () => {
+const Intro = ({onFinish}) => {
     const [name, setName] = useState('');
     const handleOnChangeText = (text) => {
         setName(text);
@@ -12,7 +12,8 @@ const Intro = () => {
     const handleSubmit = async () =>{
         const user = {name : name};
         await AsyncStorage.setItem('user', JSON.stringify(user));
-    }
+        if(onFinish) onFinish();
+    };
 
     return(
         <>
@@ -23,7 +24,7 @@ const Intro = () => {
                 <TextInput 
                     value={name} 
                     onChangeText={handleOnChangeText} 
-                    placeholder = "Enter name" 
+                    placeholder = "Name" 
                     style = {styles.textInput}
                 />
                 
@@ -55,10 +56,12 @@ const styles = StyleSheet.create({
     },
     inputTitle: {
         alignSelf: 'flex-start',
-        paddingLeft: 35,
+        paddingLeft: 40,
         marginBottom: 5,
+        fontSize: 20,
         opacity: 0.5,
-        color: colors.DARK,
+        color: 'black',
+        fontWeight: 'bold',
     }
 });
 
