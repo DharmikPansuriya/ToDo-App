@@ -1,12 +1,26 @@
+import { 
+    View, 
+    Text, 
+    StyleSheet,
+    StatusBar, 
+    Keyboard, 
+    TouchableWithoutFeedback, 
+    FlatList
+    } 
+    from 'react-native'
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, StatusBar} from 'react-native'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import NoteInputModal from '../components/NoteInputModal';
 import RoundIconBtn from '../components/RoundIconBtn';
 import SearchBar from '../components/SearchBar';
+import Note from '../components/Note';
 import colors from '../misc/colors';
 
 const NoteScreen = ({user}) => {
     const [greet, setGreet] = useState('Evening');
+    const [modalVisible, setModalVisible] = useState(false);
+    const [notes, setNotes] = useState([]);
+
     const findGreet = () => {
         const hrs = new Date().getHours();
         if(hrs >= 0 && hrs < 12) return setGreet('Morning');
@@ -14,35 +28,70 @@ const NoteScreen = ({user}) => {
         if(hrs >= 17 && hrs <= 23) return setGreet('Evening');
     };
 
+    const findNotes = async () => {
+        const result = await AsyncStorage.getItem('notes');
+        // console.log(result);
+        // AsyncStorage.clear();
+        if(result !== null) setNotes(JSON.parse(result));
+    }
+
+    const handleOnSubmit = async (title, description) => {
+        const note = {id: Date.now(), title, description, time: Date.now()};
+        const updatedNotes = [...notes, note];
+        setNotes(updatedNotes);
+        await AsyncStorage.setItem('notes', JSON.stringify(updatedNotes));
+    };
+
     useEffect(() => {
+        findNotes()
         findGreet()
     }, []);
 
     return ( 
         <>
             <StatusBar barStyle='dark-content' backgroundColor={colors.LIGHT} /> 
-            <View style={styles.container}>
-                <Text style={styles.header}>{`Good ${greet} ${user.name}`} </Text>
-                <SearchBar containerStyle={{marginVertical:10}}/>
-                <View style={[StyleSheet.absoluteFillObject, styles.emptyHeaderContainer]}>
-                    <Text style={styles.emptyHeader} >Add Notes</Text>
-                    <RoundIconBtn onPress={() =>console.log("opening ok")} antIconName='plus' style={styles.addBtn}/>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                <View style={styles.container}>
+                    <Text 
+                        style={styles.header}>{`Good ${greet} ${user.name}`} 
+                    </Text>
+                    <SearchBar containerStyle={{marginVertical:10}}/>
+                    <FlatList 
+                        date={notes} 
+                        keyExtractor={item => item.id.toString()}
+                        renderItem={({item}) => <Note item={item}/>}                        
+                    />
+                    {!notes.length ?
+                    <View style={[StyleSheet.absoluteFillObject, styles.emptyHeaderContainer]}>
+                        <Text style={styles.emptyHeader}> Add Notes </Text>
+
+                    </View> : null}
                 </View>
-            </View>
-            <NoteInputModal visible={true}/>
+            </TouchableWithoutFeedback>
+            <RoundIconBtn 
+                onPress={() =>setModalVisible(true)} 
+                antIconName='plus' 
+                style={styles.addBtn}
+            />
+            <NoteInputModal 
+                visible={modalVisible} 
+                onClose={() => setModalVisible(false)}
+                onSubmit={handleOnSubmit}
+            />
         </>
     );
 };
 
 const styles = StyleSheet.create({
     header:{
-        fontSize: 22,
+        fontSize: 25,
         fontWeight: 'bold',
     },
     container: {
         flex: 1,
         paddingHorizontal: 10,
         marginVertical:10,
+        zIndex: 1,
     },
     emptyHeader: {
         fontSize: 20,
@@ -54,13 +103,14 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        // zIndex: -1,
+        zIndex: -1,
     },
     addBtn: {
         position: 'absolute',
         fontSize: 30,
         right: 30,
         bottom: 10,
+        zIndex: 1,
     }
 });
 

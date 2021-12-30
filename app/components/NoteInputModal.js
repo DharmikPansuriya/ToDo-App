@@ -3,9 +3,11 @@ import { StyleSheet, TouchableWithoutFeedback, Text, TextInput, View, Modal, Sta
 import RoundIconBtn from '../components/RoundIconBtn';
 import colors from '../misc/colors';
 
-const NoteInputModal = ({visible}) => {
+const NoteInputModal = ({visible, onClose, onSubmit}) => {
+
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
+
     const handleOnChangeText = (text, valueFor) => {
         if(valueFor === 'title') setTitle(text);
         if(valueFor === 'description') setDescription(text);
@@ -15,7 +17,20 @@ const NoteInputModal = ({visible}) => {
         Keyboard.dismiss();
     };
 
-    console.log(title, description);
+    const handleSubmit = () => {
+        if(!title.trim() && !description.trim()) return onClose();
+        onSubmit(title, description);
+        setTitle('');
+        setDescription('');
+        onClose();
+    };
+    
+    const handleClose = () => {
+        setTitle('');
+        setDescription('');
+        onClose();
+    };
+
     return (
         <>
             <StatusBar barStyle='dark-content' backgroundColor={colors.LIGHT}/> 
@@ -34,7 +49,19 @@ const NoteInputModal = ({visible}) => {
                         multiline
                         onChangeText={(text) => handleOnChangeText(text, 'description')}
                     />
-                    <RoundIconBtn antIconName='check'/>
+                    <View style={styles.btnContainer} >
+                        <RoundIconBtn 
+                            antIconName='check' 
+                            size={20}
+                            onPress={handleSubmit}
+                        />
+                        { title.trim() || description.trim() ? <RoundIconBtn 
+                            antIconName='close' 
+                            style={{marginLeft: 15}}
+                            size={20}
+                            onPress={handleClose}
+                        /> : null}
+                    </View>
                 </View>
                 <TouchableWithoutFeedback onPress = {handleModalClose} >
                     <View style={[styles.modalBG, StyleSheet.absoluteFillObject]} />
@@ -63,7 +90,7 @@ const styles = StyleSheet.create({
     description: {
         borderWidth: 2,
         borderColor: colors.PRIMARY,
-        height: 300,
+        height: 280,
         textAlignVertical: 'top',
         opacity: 0.5,
         paddingHorizontal: 10,
@@ -72,7 +99,12 @@ const styles = StyleSheet.create({
     modalBG: {
         flex:1,
         zIndex: -1,
-    }
+    },
+    btnContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        paddingVertical: 15,
+    },
 
 });
 
