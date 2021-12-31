@@ -30,7 +30,7 @@ const NoteScreen = ({user}) => {
 
     const findNotes = async () => {
         const result = await AsyncStorage.getItem('notes');
-        // console.log(result);
+        console.log(result);
         // AsyncStorage.clear();
         if(result !== null) setNotes(JSON.parse(result));
     }
@@ -52,19 +52,23 @@ const NoteScreen = ({user}) => {
             <StatusBar barStyle='dark-content' backgroundColor={colors.LIGHT} /> 
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <View style={styles.container}>
-                    <Text 
-                        style={styles.header}>{`Good ${greet} ${user.name}`} 
+                    <Text style={styles.header}>
+                        {`Good ${greet} ${user.name}`} 
                     </Text>
                     <SearchBar containerStyle={{marginVertical:10}}/>
+                    <Text style={styles.line}/>
                     <FlatList 
-                        date={notes} 
+                        data = {notes} 
                         keyExtractor={item => item.id.toString()}
                         renderItem={({item}) => <Note item={item}/>}                        
+                        numColumns={2}
+                        columnWrapperStyle={{
+                            justifyContent: 'space-between',
+                        }}
                     />
-                    {!notes.length ?
+                    {!notes.length ?           
                     <View style={[StyleSheet.absoluteFillObject, styles.emptyHeaderContainer]}>
                         <Text style={styles.emptyHeader}> Add Notes </Text>
-
                     </View> : null}
                 </View>
             </TouchableWithoutFeedback>
@@ -77,7 +81,7 @@ const NoteScreen = ({user}) => {
                 visible={modalVisible} 
                 onClose={() => setModalVisible(false)}
                 onSubmit={handleOnSubmit}
-            />
+            />               
         </>
     );
 };
@@ -111,6 +115,10 @@ const styles = StyleSheet.create({
         right: 30,
         bottom: 10,
         zIndex: 1,
+    },
+    line: {
+        borderBottomColor: 'black',
+        marginBottom: 100
     }
 });
 
