@@ -16,7 +16,7 @@ import SearchBar from '../components/SearchBar';
 import Note from '../components/Note';
 import colors from '../misc/colors';
 
-const NoteScreen = ({user}) => {
+const NoteScreen = ({user, navigation}) => {
     const [greet, setGreet] = useState('Evening');
     const [modalVisible, setModalVisible] = useState(false);
     const [notes, setNotes] = useState([]);
@@ -30,7 +30,7 @@ const NoteScreen = ({user}) => {
 
     const findNotes = async () => {
         const result = await AsyncStorage.getItem('notes');
-        console.log(result);
+        // console.log(result);
         // AsyncStorage.clear();
         if(result !== null) setNotes(JSON.parse(result));
     }
@@ -41,6 +41,10 @@ const NoteScreen = ({user}) => {
         setNotes(updatedNotes);
         await AsyncStorage.setItem('notes', JSON.stringify(updatedNotes));
     };
+
+    const openNote = (note) => {
+        navigation.navigate('NoteDetail', {note})
+    }
 
     useEffect(() => {
         findNotes()
@@ -55,12 +59,13 @@ const NoteScreen = ({user}) => {
                     <Text style={styles.header}>
                         {`Good ${greet} ${user.name}`} 
                     </Text>
+                    {notes.length ?
                     <SearchBar containerStyle={{marginVertical:10}}/>
-                    <Text style={styles.line}/>
+                    : null }
                     <FlatList 
                         data = {notes} 
                         keyExtractor={item => item.id.toString()}
-                        renderItem={({item}) => <Note item={item}/>}                        
+                        renderItem={({item}) => <Note onPress={() => openNote(item)} item={item}/>}                        
                         numColumns={2}
                         columnWrapperStyle={{
                             justifyContent: 'space-between',
@@ -116,10 +121,6 @@ const styles = StyleSheet.create({
         bottom: 10,
         zIndex: 1,
     },
-    line: {
-        borderBottomColor: 'black',
-        marginBottom: 100
-    }
 });
 
 export default NoteScreen;
