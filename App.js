@@ -29,7 +29,7 @@ export default function App() {
 
   if(!user.name) return <Intro onFinish={findUser}/>;
   return <NavigationContainer> 
-          <Stack.Navigator screenOptions={{headerTitle: '', headerTrasparrent: false, headerShadowVisible: true}}>
+          <Stack.Navigator screenOptions={{headerTitle: '', headerTransparent: true, headerShadowVisible: false}}>
             <Stack.Screen component={renderNoteScreen} name="NoteScreen" />
             <Stack.Screen component={NoteDetail} name="NoteDetail" />
           </Stack.Navigator>
