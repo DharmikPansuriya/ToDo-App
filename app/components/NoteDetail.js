@@ -1,26 +1,81 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import { ScrollView, StyleSheet, Text, View, Alert } from 'react-native'
 import react from 'react';
 import { useHeaderHeight } from '@react-navigation/elements';
 import colors from '../misc/colors';
+import RoundIconBtn from '../components/RoundIconBtn';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const formatDate = (ms) => {
+    const date = new Date(ms);
+    const day = date.getDate();
+    const month = date.getMonth()+1;
+    const year = date.getFullYear();
+    const hrs = date.getHours();
+    const min = date.getMinutes();
+    const sec = date.getSeconds();
+
+    return `${day}/${month}/${year} - ${hrs}:${min}:${sec}`
+}
 
 const NoteDetail = (props) => {
     const {note} = (props.route.params);
     const headerHeight = useHeaderHeight();
-    const formateDate = (time) => {
-        return '10:00';
-    }
+
+    const deleteNote = async() => {
+        const result = await AsyncStorage.getItem('notes');
+        let notes = [];
+        if(result != null){
+            notes = JSON.parse(result);
+        }
+        const newNotes = notes.filter(n => n.id !==note.id);
+        await AsyncStorage.setItem('notes', JSON.stringify(newNotes));
+        props.navigation.goBack();
+    };
+
+    const displayDeleteAlert = () => {
+        Alert.alert('Are you sure?', 'This action will delete your note permanently!',
+        [
+            {
+                text: 'Delete',
+                onPress: () => deleteNote,
+            },
+            {
+                text: 'No Thanks!',
+                onPress: () => console.log("No"),
+            },
+        ], 
+        {
+            cancelable: true,
+        }
+        );
+    };
+
     return (
+        <>
         <ScrollView contentContainerStyle={[styles.conatiner,{paddingTop: headerHeight}]} >
-            <Text>{`Created At ${formateDate(note.time)}`}</Text>
+            <Text style={styles.time}>{`Created At ${formatDate(note.time)}`}</Text>
             <Text style={styles.title}>{note.title}</Text>
-            <Text style={styles.description}>{note.description}</Text>
+            <Text style={styles.description}>{note.description}</Text>       
         </ScrollView>
+        <View style={styles.btnContainer}>
+            <RoundIconBtn
+                antIconName='delete' 
+                style={{backgroundColor: colors.ERROR, marginBottom: 15}}
+                onPress={displayDeleteAlert}
+            />
+            <RoundIconBtn
+                antIconName='edit' style={{backgroundColor: colors.PRIMARY}}
+                onPress={() => console.log("eddididit")}
+            />
+        </View>
+        </>
     );
+
 };
 
 const styles = StyleSheet.create({
     conatiner: {
-        flex: 1,
+        // flex: 1,
         paddingHorizontal: 15,
     },
     title: {
@@ -31,6 +86,16 @@ const styles = StyleSheet.create({
     description: {
         fontSize: 20,
         opacity: 0.6,
+    },
+    time:{
+        textAlign: 'right',
+        fontSize: 14,
+        opacity: 0.4,
+    },
+    btnContainer:{
+        position: 'absolute',
+        right: 25,
+        bottom: 25,
     }
 })
 
