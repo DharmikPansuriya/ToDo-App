@@ -16,14 +16,16 @@ import SearchBar from '../components/SearchBar';
 import { useNotes } from '../contexts/NoteProvider';
 import Note from '../components/Note';
 import colors from '../misc/colors';
+import NotFound from '../components/NotFound.js';
 
 
 
 const NoteScreen = ({user, navigation}) => {
     const [greet, setGreet] = useState('Evening');
     const [modalVisible, setModalVisible] = useState(false);
-    const {notes, setNotes} = useNotes();
-
+    const [searchQuery, setSearchQuery] =useState('');
+    const {notes, setNotes, findNotes} = useNotes();
+    const [resultNotFound, setresultNotFound] = useState(false)
 
     const findGreet = () => {
         const hrs = new Date().getHours();
@@ -43,9 +45,37 @@ const NoteScreen = ({user, navigation}) => {
         navigation.navigate('NoteDetail', {note})
     }
 
+    const handleOnSearchInput = async(text) => {
+        setSearchQuery(text);
+        if(!text.trim()){
+            setSearchQuery('');
+            setresultNotFound(false);
+            return await findNotes();
+
+        }
+        const filteredNotes = notes.filter(note => {
+            if(note.title.toLowerCase().includes(text.toLowerCase())){
+                return note;
+            }
+        })
+
+        if(filteredNotes.length){
+            setNotes([...filteredNotes])
+        }
+        else{
+            setresultNotFound(true);
+        }
+    }
+
     useEffect(() => {
         findGreet();
     }, []);
+    
+    const handleOnClear = async() => {
+        setSearchQuery('')
+        setresultNotFound(false);
+        await findNotes()
+    }
 
     return ( 
         <>
@@ -56,17 +86,25 @@ const NoteScreen = ({user, navigation}) => {
                         {`Good ${greet} ${user.name}`} 
                     </Text>
                     {notes.length ?
-                    <SearchBar containerStyle={{marginVertical:10}}/>
-                    : null }
-                    <FlatList 
-                        data = {notes} 
-                        keyExtractor={item => item.id.toString()}
-                        renderItem={({item}) => <Note onPress={() => openNote(item)} item={item}/>}                        
-                        numColumns={2}
-                        columnWrapperStyle={{
-                            justifyContent: 'space-between',
-                        }}
-                    />
+                    <SearchBar 
+                        value={searchQuery} 
+                        onChangeText={handleOnSearchInput} 
+                        containerStyle={{marginVertical:10}}
+                        onClear={handleOnClear}
+                    /> : null }
+                    
+                    {resultNotFound ? (<NotFound/>) 
+                    
+                    :   (<FlatList 
+                            data = {notes} 
+                            keyExtractor={item => item.id.toString()}
+                            renderItem={({item}) => <Note onPress={() => openNote(item)} item={item}/>}                        
+                            numColumns={2}
+                            columnWrapperStyle={{
+                                justifyContent: 'space-between',
+                            }}
+                        />)
+                    }
                     {!notes.length ?           
                     <View style={[StyleSheet.absoluteFillObject, styles.emptyHeaderContainer]}>
                         <Text style={styles.emptyHeader}> Add Notes </Text>

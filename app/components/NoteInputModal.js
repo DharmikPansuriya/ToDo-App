@@ -17,17 +17,31 @@ const NoteInputModal = ({visible, onClose, onSubmit, note, isEdit}) => {
         Keyboard.dismiss();
     };
 
+    useEffect(() => {
+        if(isEdit){
+            setTitle(note.title)
+            setDescription(note.description)
+        }
+    }, [isEdit])
+
     const handleSubmit = () => {
         if(!title.trim() && !description.trim()) return onClose();
-        onSubmit(title.trim(), description.trim());
-        setTitle('');
-        setDescription('');
+        if(isEdit){
+            onSubmit(title, description, Date.now());
+        }
+        else{
+            onSubmit(title.trim(), description.trim());
+            setTitle('');
+            setDescription('');
+        }
         onClose();
     };
     
     const handleClose = () => {
-        setTitle('');
-        setDescription('');
+        if(!isEdit){
+            setTitle('');
+            setDescription('');
+        }
         onClose();
     };
 
