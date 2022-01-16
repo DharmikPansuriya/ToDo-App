@@ -3,7 +3,7 @@ import { StyleSheet, TouchableWithoutFeedback, Text, TextInput, View, Modal, Sta
 import RoundIconBtn from '../components/RoundIconBtn';
 import colors from '../misc/colors';
 
-const NoteInputModal = ({visible, onClose, onSubmit}) => {
+const NoteInputModal = ({visible, onClose, onSubmit, note, isEdit}) => {
 
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');

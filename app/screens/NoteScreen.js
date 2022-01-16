@@ -13,13 +13,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import NoteInputModal from '../components/NoteInputModal';
 import RoundIconBtn from '../components/RoundIconBtn';
 import SearchBar from '../components/SearchBar';
+import { useNotes } from '../contexts/NoteProvider';
 import Note from '../components/Note';
 import colors from '../misc/colors';
+
+
 
 const NoteScreen = ({user, navigation}) => {
     const [greet, setGreet] = useState('Evening');
     const [modalVisible, setModalVisible] = useState(false);
-    const [notes, setNotes] = useState([]);
+    const {notes, setNotes} = useNotes();
+
 
     const findGreet = () => {
         const hrs = new Date().getHours();
@@ -27,13 +31,6 @@ const NoteScreen = ({user, navigation}) => {
         if(hrs >= 12 && hrs < 17) return setGreet('Afternoon');
         if(hrs >= 17 && hrs <= 23) return setGreet('Evening');
     };
-
-    const findNotes = async () => {
-        const result = await AsyncStorage.getItem('notes');
-        // console.log(result);
-        // AsyncStorage.clear();
-        if(result !== null) setNotes(JSON.parse(result));
-    }
 
     const handleOnSubmit = async (title, description) => {
         const note = {id: Date.now(), title, description, time: Date.now()};
@@ -47,8 +44,7 @@ const NoteScreen = ({user, navigation}) => {
     }
 
     useEffect(() => {
-        findNotes()
-        findGreet()
+        findGreet();
     }, []);
 
     return ( 

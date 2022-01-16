@@ -1,9 +1,11 @@
 import { ScrollView, StyleSheet, Text, View, Alert } from 'react-native'
-import react from 'react';
+import react, {useState } from 'react';
 import { useHeaderHeight } from '@react-navigation/elements';
 import colors from '../misc/colors';
 import RoundIconBtn from '../components/RoundIconBtn';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNotes} from '../contexts/NoteProvider';
+import NoteInputModal from './NoteInputModal';
 
 const formatDate = (ms) => {
     const date = new Date(ms);
@@ -20,14 +22,16 @@ const formatDate = (ms) => {
 const NoteDetail = (props) => {
     const {note} = (props.route.params);
     const headerHeight = useHeaderHeight();
+    const {setNotes} = useNotes();
+    const [showModal, setShowModal] = useState(false);
+    const [isEdit, setIsEdit] = useState(false);
 
     const deleteNote = async() => {
         const result = await AsyncStorage.getItem('notes');
         let notes = [];
-        if(result != null){
-            notes = JSON.parse(result);
-        }
-        const newNotes = notes.filter(n => n.id !==note.id);
+        if(result != null) notes = JSON.parse(result);
+        const newNotes = notes.filter(n => n.id !== note.id);
+        setNotes(newNotes);
         await AsyncStorage.setItem('notes', JSON.stringify(newNotes));
         props.navigation.goBack();
     };
@@ -37,7 +41,7 @@ const NoteDetail = (props) => {
         [
             {
                 text: 'Delete',
-                onPress: () => deleteNote,
+                onPress: deleteNote,
             },
             {
                 text: 'No Thanks!',
@@ -49,6 +53,9 @@ const NoteDetail = (props) => {
         }
         );
     };
+
+    const handleUpdate = () => {}
+    const handleOnClose = () => setShowModal(false)
 
     return (
         <>
@@ -65,9 +72,16 @@ const NoteDetail = (props) => {
             />
             <RoundIconBtn
                 antIconName='edit' style={{backgroundColor: colors.PRIMARY}}
-                onPress={() => console.log("eddididit")}
+                onPress={() => setShowModal(true)}
             />
         </View>
+        <NoteInputModal 
+            isEdit={isEdit}
+            note={note}
+            onClose={handleOnClose}
+            onSubmit={handleUpdate}
+            visible={showModal}
+        />
         </>
     );
 
@@ -99,5 +113,5 @@ const styles = StyleSheet.create({
     }
 })
 
-export default NoteDetail
+export default NoteDetail;
 
