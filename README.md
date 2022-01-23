@@ -7,9 +7,7 @@ This app can perform CRUD (Create, Read, Update and Delete) operations.
 
 
 ## App GIF
-<img src="https://github.com/DharmikPansuriya/ToDo-App/blob/master/screenshots/Gif.gif" width="250" height="250"/>
-<!-- ![App Screenshot](https://github.com/DharmikPansuriya/ToDo-App/blob/master/screenshots/Gif.gif) -->
-
+<img src="https://github.com/DharmikPansuriya/ToDo-App/blob/master/screenshots/Gif.gif" width="231" height="500"/>
 
 ## Tech Stack
 
