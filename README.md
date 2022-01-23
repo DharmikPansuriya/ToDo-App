@@ -8,7 +8,7 @@ This app can perform CRUD (Create, Read, Update and Delete) operations.
 
 ## Screenshots
 
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
+![App Screenshot](https://github.com/DharmikPansuriya/ToDo-App/blob/master/screenshots/Screenshot_1.jpg)
 
 
 ## Tech Stack
