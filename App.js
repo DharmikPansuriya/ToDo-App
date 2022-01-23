@@ -24,7 +24,7 @@ export default function App() {
 
   useEffect(() => {
     findUser();
-    // AsyncStorage.clear();
+    AsyncStorage.clear();
   }, []);
 
   const renderNoteScreen = (props) => <NoteScreen {...props} user={user}/>
