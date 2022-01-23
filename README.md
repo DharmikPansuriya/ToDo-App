@@ -6,7 +6,7 @@ This is To-do mobile application, which you can use to write down your daily tas
 This app can perform CRUD (Create, Read, Update and Delete) operations. 
 
 
-## Screenshots
+## App Demo as GIF
 
 ![App Screenshot](https://github.com/DharmikPansuriya/ToDo-App/blob/master/screenshots/Gif.gif)
 
